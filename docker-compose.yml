@@ -61,5 +61,14 @@ services:
       - libros
       - ventas
 
+  frontend:
+    build: ./frontend
+    environment:
+      GATEWAY_URL: http://gateway:80
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+
 volumes:
   pgdata:
