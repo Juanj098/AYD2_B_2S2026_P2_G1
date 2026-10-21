@@ -1,0 +1,161 @@
+:root {
+  --plum: #5E3A4D;
+  --rosewood: #C77486;
+  --cream: #F4E1D2;
+  --sage: #A8B89A;
+  --lavender: #A7B0D6;
+  --ink: #2E1D26;
+  --plum-dark: #3A2330;
+  --white: #FFFDFB;
+  --muted: #6B5560;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --radius-pill: 60px;
+  --radius-card: 12px;
+  --shadow: 0 4px 20px rgba(46, 29, 38, 0.25);
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  background: var(--cream);
+}
+
+.contenedor { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* Navegación */
+.nav { background: var(--plum); color: var(--cream); }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; padding-top: 20px; padding-bottom: 20px; }
+.logo { font-family: var(--font-display); font-size: 24px; color: var(--white); text-decoration: none; }
+.logo em { font-style: italic; color: var(--lavender); }
+.nav nav { display: flex; gap: 24px; }
+.nav nav a { color: var(--cream); text-decoration: none; font-weight: 500; }
+.nav nav a:hover { text-decoration: underline; }
+
+/* Bandas */
+.banda { padding: 80px 0; }
+.banda-hero { background: var(--plum); color: var(--white); padding-top: 48px; }
+.banda-crema { background: var(--cream); }
+.banda-salvia { background: var(--sage); }
+
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; }
+h2 { font-size: 48px; line-height: 0.95; margin-bottom: 8px; }
+
+/* Hero */
+.hero h1 { font-size: 72px; line-height: 0.9; max-width: 760px; margin-bottom: 20px; }
+.hero p { font-size: 18px; max-width: 520px; color: var(--cream); margin-bottom: 32px; }
+
+.buscador {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--white); border-radius: var(--radius-pill);
+  padding: 6px; max-width: 640px; box-shadow: var(--shadow);
+}
+.buscador select, .buscador input {
+  border: none; background: transparent; font: inherit; color: var(--ink); padding: 12px 14px;
+}
+.buscador select { border-right: 1px solid rgba(94, 58, 77, 0.2); cursor: pointer; }
+.buscador input { flex: 1; min-width: 0; outline: none; }
+
+/* Botones */
+.btn {
+  font: inherit; font-weight: 500; border: none; cursor: pointer;
+  border-radius: var(--radius-pill); padding: 14px 26px;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-oscuro { background: var(--plum); color: var(--white); box-shadow: var(--shadow); }
+.btn-borde { background: transparent; color: var(--plum); border: 1.5px solid var(--plum); }
+.btn-chico { padding: 8px 16px; font-size: 14px; width: 100%; }
+
+/* Catálogo */
+.seccion-titulo { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 8px; flex-wrap: wrap; }
+.estado { color: var(--muted); min-height: 24px; margin-bottom: 24px; }
+
+.grid-libros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 40px 24px;
+}
+
+.libro { display: flex; flex-direction: column; gap: 6px; }
+.libro h3 { font-family: var(--font-body); font-size: 16px; font-weight: 600; line-height: 1.3; margin-top: 10px; }
+.libro .autor { color: var(--muted); font-size: 14px; }
+.libro-pie { display: flex; justify-content: space-between; align-items: center; margin: 4px 0 10px; }
+.precio { font-weight: 600; }
+
+.chip { font-size: 12px; background: var(--lavender); color: var(--ink); padding: 3px 10px; border-radius: 8px; }
+.chip-agotado { background: var(--rosewood); }
+
+/* Portadas generadas */
+.portada {
+  aspect-ratio: 2 / 3;
+  border-radius: 4px 10px 10px 4px;
+  padding: 20px 16px 16px 22px;
+  display: flex; flex-direction: column; justify-content: space-between;
+  box-shadow: inset 6px 0 0 rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+.libro:hover .portada { transform: translateY(-4px); }
+.portada-titulo { font-family: var(--font-display); font-size: 22px; line-height: 1.05; }
+.portada-autor { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+.portada-plum     { background: var(--plum);     color: var(--cream); }
+.portada-rosewood { background: var(--rosewood); color: var(--ink); }
+.portada-sage     { background: var(--sage);     color: var(--ink); }
+.portada-lavender { background: var(--lavender); color: var(--ink); }
+
+/* Ranking */
+.subtitulo { margin-bottom: 32px; }
+.ranking {
+  list-style: none; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;
+}
+.ranking li {
+  background: var(--cream); border-radius: var(--radius-card); padding: 24px;
+  display: flex; align-items: center; gap: 16px;
+}
+.ranking .pos { font-family: var(--font-display); font-size: 56px; line-height: 1; color: var(--rosewood); }
+.ranking strong { display: block; line-height: 1.3; }
+.ranking span.total { color: var(--muted); font-size: 14px; }
+.ranking .vacio { justify-content: center; color: var(--muted); }
+
+/* Footer */
+.footer { background: var(--plum-dark); color: var(--cream); padding: 32px 0; font-size: 14px; }
+
+/* Diálogos */
+dialog {
+  border: none; border-radius: 24px; padding: 32px;
+  background: var(--cream); color: var(--ink);
+  width: min(440px, calc(100% - 32px)); box-shadow: var(--shadow);
+}
+dialog::backdrop { background: rgba(46, 29, 38, 0.55); }
+dialog h3 { font-size: 30px; margin-bottom: 12px; }
+dialog label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 14px; }
+dialog input {
+  display: block; width: 100%; margin-top: 6px; padding: 12px 14px;
+  font: inherit; border: 1px solid rgba(94, 58, 77, 0.3); border-radius: 10px; background: var(--white);
+}
+.dlg-libro { font-family: var(--font-display); font-size: 20px; margin-bottom: 16px; }
+.dlg-fila { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.dlg-error { color: #8A2E45; min-height: 20px; font-size: 14px; }
+.dlg-acciones { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+
+/* Móvil */
+@media (max-width: 640px) {
+  .banda { padding: 56px 0; }
+  .hero h1 { font-size: 44px; }
+  h2 { font-size: 36px; }
+  .buscador { flex-wrap: wrap; border-radius: 20px; }
+  .buscador input { flex-basis: 100%; order: -1; }
+  .buscador .btn { flex: 1; }
+  .nav nav { gap: 16px; font-size: 14px; }
+  .grid-libros { grid-template-columns: repeat(2, 1fr); gap: 32px 16px; }
+}

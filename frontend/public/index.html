@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Librería AYD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="nav">
+    <div class="contenedor nav-inner">
+      <a class="logo" href="#">Librería <em>AYD</em></a>
+      <nav>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#ranking">Más vendidos</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="banda banda-hero">
+    <div class="contenedor hero">
+      <h1>Encuentra tu próxima lectura</h1>
+      <p>Busca en nuestro catálogo por título o autor y descubre los libros que más se están vendiendo.</p>
+      <form id="form-busqueda" class="buscador" role="search">
+        <select id="filtro" aria-label="Buscar por">
+          <option value="q">Todo</option>
+          <option value="titulo">Título</option>
+          <option value="autor">Autor</option>
+        </select>
+        <input id="busqueda" type="search" placeholder="Ej. García Márquez" autocomplete="off" aria-label="Texto de búsqueda">
+        <button type="submit" class="btn btn-oscuro">Buscar</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="catalogo" class="banda banda-crema">
+    <div class="contenedor">
+      <div class="seccion-titulo">
+        <h2>Catálogo</h2>
+        <button id="btn-nuevo" class="btn btn-oscuro">Agregar libro</button>
+      </div>
+      <p id="estado-catalogo" class="estado" aria-live="polite"></p>
+      <div id="grid-libros" class="grid-libros"></div>
+    </div>
+  </section>
+
+  <section id="ranking" class="banda banda-salvia">
+    <div class="contenedor">
+      <h2>Los más vendidos</h2>
+      <p class="subtitulo">Calculado a partir de las ventas registradas.</p>
+      <ol id="lista-ranking" class="ranking"></ol>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="contenedor">Librería AYD · Análisis y Diseño de Sistemas 2 · Sección B, Grupo 1</div>
+  </footer>
+
+  <!-- Diálogo: registrar venta -->
+  <dialog id="dlg-venta">
+    <form id="form-venta">
+      <h3>Registrar venta</h3>
+      <p id="venta-libro" class="dlg-libro"></p>
+      <label>Cantidad
+        <input id="venta-cantidad" type="number" min="1" value="1" required>
+      </label>
+      <p id="venta-error" class="dlg-error" aria-live="polite"></p>
+      <div class="dlg-acciones">
+        <button type="button" class="btn btn-borde" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-oscuro">Registrar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Diálogo: agregar libro -->
+  <dialog id="dlg-libro">
+    <form id="form-libro">
+      <h3>Agregar libro</h3>
+      <label>Título <input name="titulo" required maxlength="200"></label>
+      <label>Autor <input name="autor" required maxlength="150"></label>
+      <div class="dlg-fila">
+        <label>Precio (Q) <input name="precio" type="number" min="0" step="0.01" required></label>
+        <label>Existencias <input name="existencias" type="number" min="0" step="1" required></label>
+      </div>
+      <p id="libro-error" class="dlg-error" aria-live="polite"></p>
+      <div class="dlg-acciones">
+        <button type="button" class="btn btn-borde" data-cerrar>Cancelar</button>
+        <button type="submit" class="btn btn-oscuro">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
