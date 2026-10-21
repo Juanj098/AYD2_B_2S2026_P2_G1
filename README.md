@@ -1,0 +1,1 @@
+﻿# AYD2_B_2S2026_P2_G1 - Librería AYD

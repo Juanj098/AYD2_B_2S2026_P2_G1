@@ -1,0 +1,29 @@
+﻿# Node / Python
+node_modules/
+__pycache__/
+*.pyc
+venv/
+
+# Variables y secretos
+.env
+*.env
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+crash.log
+
+# Credenciales de nube y llaves SSH
+*.json.key
+credentials*.json
+*.pem
+id_rsa*
+
+# Ansible
+*.retry
+
+# SO
+.DS_Store
