@@ -15,7 +15,7 @@ async function init() {
       libro_id INT NOT NULL,
       titulo VARCHAR(200) NOT NULL,
       cantidad INT NOT NULL CHECK (cantidad > 0),
-      fecha TIMESTAMP NOT NULL DEFAULT NOW()
+      fecha TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
 }
