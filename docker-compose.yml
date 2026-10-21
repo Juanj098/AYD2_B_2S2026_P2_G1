@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: libros_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:      
+      test: ["CMD-SHELL", "pg_isready -U postgres -h localhost -d ventas_db"]
+      interval: 3s
+      retries: 20
+
+  libros:
+    build: ./libros-service
+    restart: on-failure
+    environment:
+      PORT: 3001
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: libros_db
+    ports:
+      - "3001:3001"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  ventas:
+    build: ./ventas-service
+    restart: on-failure
+    environment:
+      PORT: 3002
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: ventas_db
+      LIBROS_URL: http://libros:3001
+    ports:
+      - "3002:3002"
+    depends_on:
+      db:
+        condition: service_healthy
+      libros:
+        condition: service_started
+
+  gateway:
+    build: ./gateway
+    environment:
+      LIBROS_URL: http://libros:3001
+      VENTAS_URL: http://ventas:3002
+    ports:
+      - "8080:80"
+    depends_on:
+      - libros
+      - ventas
+
+volumes:
+  pgdata:
