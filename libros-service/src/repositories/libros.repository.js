@@ -43,4 +43,14 @@ async function update(id, { titulo, autor, precio, existencias }) {
   return rows[0];
 }
 
-module.exports = { findAll, findById, create, update };
+// Un solo UPDATE condicionado: dos ventas simultáneas no pueden dejar existencias negativas
+async function ajustarExistencias(id, delta) {
+  const { rows } = await pool.query(
+    `UPDATE libros SET existencias = existencias + $1
+     WHERE id = $2 AND existencias + $1 >= 0 RETURNING *`,
+    [delta, id]
+  );
+  return rows[0];
+}
+
+module.exports = { findAll, findById, create, update, ajustarExistencias };
