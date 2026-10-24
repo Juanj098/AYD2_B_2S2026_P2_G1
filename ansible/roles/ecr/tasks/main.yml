@@ -1,0 +1,22 @@
+# Acceso a Amazon ECR usando el rol IAM de la VM (sin credenciales guardadas)
+
+- name: Instalar el credential helper de ECR
+  ansible.builtin.apt:
+    name: amazon-ecr-credential-helper
+    state: present
+
+- name: Carpeta de configuración de docker
+  ansible.builtin.file:
+    path: "{{ item.home }}/.docker"
+    state: directory
+    owner: "{{ item.usuario }}"
+    mode: "0700"
+  loop: "{{ usuarios_docker }}"
+
+- name: Usar el helper para el registro de ECR
+  ansible.builtin.copy:
+    dest: "{{ item.home }}/.docker/config.json"
+    content: "{{ {'credHelpers': {ecr_registry: 'ecr-login'}} | to_nice_json }}"
+    owner: "{{ item.usuario }}"
+    mode: "0600"
+  loop: "{{ usuarios_docker }}"

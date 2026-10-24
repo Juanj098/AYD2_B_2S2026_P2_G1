@@ -1,0 +1,17 @@
+# Administrado por Ansible
+services:
+  ventas:
+    image: {{ imagen_ventas }}:{{ image_tag }}
+    container_name: ventas-service
+    restart: unless-stopped
+    env_file: ventas.env
+    ports:
+      - "3002:3002"
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 384m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3002/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
