@@ -3,6 +3,8 @@ const $ = (sel) => document.querySelector(sel);
 const COLORES = ['plum', 'rosewood', 'sage', 'lavender'];
 
 let libroSeleccionado = null;
+let libroEditando = null; // null = agregando uno nuevo
+let librosPorId = new Map();
 
 // Evita que texto de la base se interprete como HTML
 function esc(texto) {
@@ -61,11 +63,16 @@ function renderLibros(libros) {
           ${l.existencias > 0 ? `${l.existencias} disponibles` : 'Agotado'}
         </span>
       </div>
-      <button class="btn btn-borde btn-chico" data-vender="${l.id}" data-titulo="${esc(l.titulo)}">
-        Registrar venta
-      </button>
+      <div class="libro-acciones">
+        <button class="btn btn-borde btn-chico" data-vender="${l.id}" data-titulo="${esc(l.titulo)}"
+          ${l.existencias > 0 ? '' : 'disabled'}>
+          Registrar venta
+        </button>
+        <button class="btn btn-borde btn-chico" data-editar="${l.id}">Editar</button>
+      </div>
     </article>
   `).join('');
+  librosPorId = new Map(libros.map((l) => [l.id, l]));
 }
 
 /* ---------- Ranking ---------- */
@@ -122,26 +129,43 @@ $('#form-venta').addEventListener('submit', async (e) => {
       body: JSON.stringify({ libro_id: libroSeleccionado, cantidad: Number($('#venta-cantidad').value) }),
     });
     $('#dlg-venta').close();
+    cargarLibros(); // refresca las existencias
     cargarRanking();
   } catch (err) {
     $('#venta-error').textContent = err.message;
   }
 });
 
-/* ---------- Agregar libro ---------- */
+/* ---------- Agregar / editar libro ---------- */
 
-$('#btn-nuevo').addEventListener('click', () => {
-  $('#form-libro').reset();
+function abrirDialogoLibro(libro = null) {
+  const form = $('#form-libro');
+  form.reset();
+  libroEditando = libro ? libro.id : null;
+  $('#libro-dlg-titulo').textContent = libro ? 'Editar libro' : 'Agregar libro';
+  if (libro) {
+    form.titulo.value = libro.titulo;
+    form.autor.value = libro.autor;
+    form.precio.value = libro.precio;
+    form.existencias.value = libro.existencias;
+  }
   $('#libro-error').textContent = '';
   $('#dlg-libro').showModal();
+}
+
+$('#btn-nuevo').addEventListener('click', () => abrirDialogoLibro());
+
+$('#grid-libros').addEventListener('click', (e) => {
+  const boton = e.target.closest('[data-editar]');
+  if (boton) abrirDialogoLibro(librosPorId.get(Number(boton.dataset.editar)));
 });
 
 $('#form-libro').addEventListener('submit', async (e) => {
   e.preventDefault();
   const datos = Object.fromEntries(new FormData(e.target));
   try {
-    await api('/libros', {
-      method: 'POST',
+    await api(libroEditando ? `/libros/${libroEditando}` : '/libros', {
+      method: libroEditando ? 'PUT' : 'POST',
       body: JSON.stringify({
         titulo: datos.titulo.trim(),
         autor: datos.autor.trim(),
