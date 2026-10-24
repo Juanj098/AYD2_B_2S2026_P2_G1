@@ -13,4 +13,5 @@ module.exports = {
   obtener: handle(async (req, res) => res.json(await service.obtener(req.params.id))),
   crear: handle(async (req, res) => res.status(201).json(await service.crear(req.body))),
   actualizar: handle(async (req, res) => res.json(await service.actualizar(req.params.id, req.body))),
+  ajustarExistencias: handle(async (req, res) => res.json(await service.ajustarExistencias(req.params.id, req.body))),
 };

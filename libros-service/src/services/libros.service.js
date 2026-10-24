@@ -28,4 +28,16 @@ async function actualizar(id, data) {
   return libro;
 }
 
-module.exports = { listar, obtener, crear, actualizar };
+async function ajustarExistencias(id, { delta }) {
+  if (!Number.isInteger(delta) || delta === 0) {
+    throw { status: 400, message: 'delta debe ser un entero distinto de 0' };
+  }
+  const libro = await repo.ajustarExistencias(id, delta);
+  if (libro) return libro;
+
+  const existente = await repo.findById(id);
+  if (!existente) throw { status: 404, message: 'Libro no encontrado' };
+  throw { status: 409, message: `Existencias insuficientes: solo hay ${existente.existencias}` };
+}
+
+module.exports = { listar, obtener, crear, actualizar, ajustarExistencias };
