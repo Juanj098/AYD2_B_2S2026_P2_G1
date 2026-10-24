@@ -27,3 +27,6 @@ id_rsa*
 
 # SO
 .DS_Store
+
+# Inventario generado por Terraform (contiene contraseñas de RDS)
+ansible/inventory/hosts.yml

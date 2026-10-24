@@ -1,0 +1,36 @@
+# Generado por Terraform (terraform/inventory.tf). No editar a mano.
+all:
+  vars:
+    ansible_user: ubuntu
+    ansible_ssh_private_key_file: ${llave_privada}
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=accept-new"
+    aws_region: ${region}
+    ecr_registry: ${registry}
+    image_tag: ${image_tag}
+    imagen_frontend: ${repos["frontend"]}
+    imagen_gateway: ${repos["gateway"]}
+    imagen_libros: ${repos["libros-service"]}
+    imagen_ventas: ${repos["ventas-service"]}
+    libros_ip_privada: ${ip_privada["libros"]}
+    ventas_ip_privada: ${ip_privada["ventas"]}
+  children:
+    frontend:
+      hosts:
+        frontend-vm:
+          ansible_host: ${ip_publica["frontend"]}
+    libros:
+      hosts:
+        libros-vm:
+          ansible_host: ${ip_publica["libros"]}
+          db_host: ${db_host["libros"]}
+          db_nombre: ${db_nombre["libros"]}
+          db_usuario: ${db_usuario}
+          db_password: ${db_password["libros"]}
+    ventas:
+      hosts:
+        ventas-vm:
+          ansible_host: ${ip_publica["ventas"]}
+          db_host: ${db_host["ventas"]}
+          db_nombre: ${db_nombre["ventas"]}
+          db_usuario: ${db_usuario}
+          db_password: ${db_password["ventas"]}
