@@ -1,0 +1,32 @@
+- name: Carpeta de la aplicación
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Variables de entorno (credenciales de RDS y URL de libros)
+  ansible.builtin.template:
+    src: ventas.env.j2
+    dest: "{{ app_dir }}/ventas.env"
+    mode: "0600"
+
+- name: Definición del contenedor
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ app_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Descargar imagen de ECR y levantar contenedor
+  ansible.builtin.command: docker compose up -d --pull always --remove-orphans
+  args:
+    chdir: "{{ app_dir }}"
+  register: compose
+  changed_when: "'Started' in compose.stderr or 'Recreated' in compose.stderr"
+
+- name: Esperar a que ventas-service responda
+  ansible.builtin.uri:
+    url: http://localhost:3002/health
+  register: salud
+  until: salud.status == 200
+  retries: 30
+  delay: 5

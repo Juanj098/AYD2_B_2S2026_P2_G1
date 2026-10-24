@@ -1,0 +1,34 @@
+- name: Carpeta de la aplicación
+  ansible.builtin.file:
+    path: "{{ app_dir }}"
+    state: directory
+    mode: "0750"
+
+- name: Definición de los contenedores (frontend + API Gateway)
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ app_dir }}/docker-compose.yml"
+    mode: "0644"
+
+- name: Descargar imágenes de ECR y levantar contenedores
+  ansible.builtin.command: docker compose up -d --pull always --remove-orphans
+  args:
+    chdir: "{{ app_dir }}"
+  register: compose
+  changed_when: "'Started' in compose.stderr or 'Recreated' in compose.stderr"
+
+- name: Esperar a que el gateway llegue a los microservicios
+  ansible.builtin.uri:
+    url: http://localhost:8080/api/libros
+  register: salud
+  until: salud.status == 200
+  retries: 20
+  delay: 5
+
+- name: Esperar al frontend
+  ansible.builtin.uri:
+    url: http://localhost/
+  register: salud_front
+  until: salud_front.status == 200
+  retries: 20
+  delay: 3

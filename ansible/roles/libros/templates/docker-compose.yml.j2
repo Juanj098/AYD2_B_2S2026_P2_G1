@@ -1,0 +1,17 @@
+# Administrado por Ansible
+services:
+  libros:
+    image: {{ imagen_libros }}:{{ image_tag }}
+    container_name: libros-service
+    restart: unless-stopped
+    env_file: libros.env
+    ports:
+      - "3001:3001"
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 384m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 3

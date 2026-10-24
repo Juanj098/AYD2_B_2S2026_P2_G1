@@ -1,0 +1,30 @@
+# Configuración y despliegue completo de la Librería AYD.
+# Uso: ansible-playbook -i inventory/hosts.yml site.yml
+
+- name: Configuración base de todas las VMs
+  hosts: all
+  become: true
+  gather_facts: false # la VM puede seguir arrancando; common espera y luego los recolecta
+  roles:
+    - common
+    - docker
+    - ecr
+
+# Libros va primero: ventas lo consulta y el gateway enruta hacia ambos
+- name: Microservicio de Libros
+  hosts: libros
+  become: true
+  roles:
+    - libros
+
+- name: Microservicio de Ventas
+  hosts: ventas
+  become: true
+  roles:
+    - ventas
+
+- name: Frontend y API Gateway
+  hosts: frontend
+  become: true
+  roles:
+    - frontend

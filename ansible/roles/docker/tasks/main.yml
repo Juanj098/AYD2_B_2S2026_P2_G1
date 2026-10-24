@@ -1,0 +1,55 @@
+# Docker Engine desde el repositorio oficial de Docker
+
+- name: Carpeta de llaves de apt
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Llave GPG de Docker
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+
+- name: Repositorio de Docker
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable
+    filename: docker
+    state: present
+
+- name: Instalar Docker Engine y Compose
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Rotación de logs de los contenedores
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": { "max-size": "10m", "max-file": "3" }
+      }
+    mode: "0644"
+  notify: Reiniciar docker
+
+- name: Docker habilitado al arranque
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Permitir a ubuntu usar docker sin sudo
+  ansible.builtin.user:
+    name: ubuntu
+    groups: docker
+    append: true

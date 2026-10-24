@@ -1,0 +1,7 @@
+- name: Recargar sysctl
+  ansible.builtin.command: sysctl --system
+
+- name: Reiniciar ssh
+  ansible.builtin.service:
+    name: ssh
+    state: restarted

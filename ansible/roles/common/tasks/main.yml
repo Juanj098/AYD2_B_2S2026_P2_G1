@@ -1,0 +1,93 @@
+# Configuración del sistema operativo (Ubuntu 24.04)
+
+- name: Esperar a que la VM acepte conexiones
+  ansible.builtin.wait_for_connection:
+    timeout: 300
+
+- name: Esperar a que cloud-init termine
+  ansible.builtin.command: cloud-init status --wait
+  register: cloud_init
+  changed_when: false
+  failed_when: cloud_init.rc not in [0, 2] # 2 = terminó con advertencias
+
+- name: Recolectar datos de la VM
+  ansible.builtin.setup:
+
+- name: Asignar nombre de host
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Leer zona horaria actual
+  ansible.builtin.command: timedatectl show -p Timezone --value
+  register: tz_actual
+  changed_when: false
+
+- name: Zona horaria de Guatemala
+  ansible.builtin.command: timedatectl set-timezone {{ zona_horaria }}
+  when: tz_actual.stdout != zona_horaria
+
+- name: Actualizar paquetes del sistema
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: safe
+    cache_valid_time: 3600
+
+- name: Instalar utilidades base
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - htop
+      - unattended-upgrades
+    state: present
+
+- name: Activar actualizaciones de seguridad automáticas
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    content: |
+      APT::Periodic::Update-Package-Lists "1";
+      APT::Periodic::Unattended-Upgrade "1";
+    mode: "0644"
+
+# Las t3.micro tienen 1 GB de RAM; el swap evita que el OOM mate contenedores
+- name: Revisar si ya existe el swap
+  ansible.builtin.stat:
+    path: /swapfile
+  register: swap
+
+- name: Crear archivo de swap
+  when: not swap.stat.exists
+  block:
+    - name: Reservar espacio
+      ansible.builtin.command: fallocate -l {{ swap_tamano }} /swapfile
+    - name: Permisos del swap
+      ansible.builtin.file:
+        path: /swapfile
+        mode: "0600"
+    - name: Formatear swap
+      ansible.builtin.command: mkswap /swapfile
+    - name: Activar swap
+      ansible.builtin.command: swapon /swapfile
+
+- name: Swap persistente
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "/swapfile none swap sw 0 0"
+
+- name: Parámetros del kernel
+  ansible.builtin.template:
+    src: sysctl.conf.j2
+    dest: /etc/sysctl.d/99-libreria.conf
+    mode: "0644"
+  notify: Recargar sysctl
+
+- name: SSH solo con llave y sin root
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/99-libreria.conf
+    content: |
+      PermitRootLogin no
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+    mode: "0644"
+  notify: Reiniciar ssh

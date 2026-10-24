@@ -1,0 +1,39 @@
+# Administrado por Ansible
+services:
+  gateway:
+    image: {{ imagen_gateway }}:{{ image_tag }}
+    container_name: api-gateway
+    restart: unless-stopped
+    environment:
+      LIBROS_URL: http://{{ libros_ip_privada }}:3001
+      VENTAS_URL: http://{{ ventas_ip_privada }}:3002
+    ports:
+      - "8080:80"
+    networks: [libreria]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+
+  frontend:
+    image: {{ imagen_frontend }}:{{ image_tag }}
+    container_name: frontend
+    restart: unless-stopped
+    environment:
+      GATEWAY_URL: http://gateway:80
+    ports:
+      - "80:80"
+    networks: [libreria]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 128m
+    depends_on:
+      - gateway
+
+networks:
+  libreria:
+    driver: bridge

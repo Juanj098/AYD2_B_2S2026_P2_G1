@@ -1,0 +1,3 @@
+usuarios_docker:
+  - { usuario: root, home: /root }
+  - { usuario: ubuntu, home: /home/ubuntu }
